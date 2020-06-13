@@ -111,10 +111,17 @@ namespace SpamDetection
             Console.WriteLine($"Accuracy: {metrics.Accuracy}");
             Console.WriteLine("");
 
-            // Convert our model to prediction engine and  demonstrate 
+            // Save the model to file.
+            mlContext.Model.Save(model, trainData.Schema, "spam-detection-model.zip");
+
+            // Load the model from file.
+            var loadedModel =
+                mlContext.Model.Load("spam-detection-model.zip", out var loadedInputSchema);
+
+            // Convert our loaded model to prediction engine and  demonstrate 
             // the outcomes on random samples from test data set.
             var predictionEngine =
-                mlContext.Model.CreatePredictionEngine<Comment, Prediction>(model);
+                mlContext.Model.CreatePredictionEngine<Comment, Prediction>(loadedModel);
             var random = new Random();
             var samples =
                 mlContext.Data.CreateEnumerable<Comment>(testData, false)
